@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,7 +26,7 @@ public class Mesh {
 	
 	protected SquareMatrix transMatrix;
 	
-	protected ArrayList<D3CoordinateMatrix[]> edges;
+	protected HashSet<Edge> edges;
 	
 	protected HashMap<Integer, D3CoordinateMatrix> displayCords;
 	
@@ -46,9 +47,7 @@ public class Mesh {
 			this.innerCords = innerCords;
 		displayCords = new HashMap<Integer, D3CoordinateMatrix>();
 		pointsColor = Color.BLACK;
-		/////
-		edges = new ArrayList<D3CoordinateMatrix[]>();
-		/////
+		edges = new HashSet<Edge>();
 		
 		try {
 			transMatrix = DefinedMatrixs.TransformWithoutScaleMatrix(DefinedMatrixs.Translation(x, y, z), DefinedMatrixs.RotationFast(Math.toRadians(ax), Math.toRadians(by), Math.toRadians(cz)));
@@ -176,36 +175,30 @@ public class Mesh {
 		displayCords = cords;
 	}
 	
+	public void setEdges(HashSet<Edge> e) {
+		edges = e;
+	}
+	
 	public void draw(Graphics2D g) {
 		
 		
-		int tempX;
-		int tempY;
-		int tempZ;
-		
 		synchronized (displayCords) {
-			
+			g.setColor(this.getColor());
 			Iterator<Entry<Integer, D3CoordinateMatrix>> it = displayCords.entrySet().iterator();
 			while(it.hasNext()) {
 				
 				Entry<Integer, D3CoordinateMatrix> cord = it.next();
-				synchronized (cord.getValue()) {
-					if ((cord.getValue().x() <= 1 && cord.getValue().x() >= -1)
-							&& (cord.getValue().y() <= 1 && cord.getValue().y() >= -1)
-							&& (cord.getValue().z() <= 1 && cord.getValue().z() >= -1)) {
+				
+				if ((cord.getValue().x() <= 1 && cord.getValue().x() >= -1)
+						&& (cord.getValue().y() <= 1 && cord.getValue().y() >= -1)
+						&& (cord.getValue().z() <= 1 && cord.getValue().z() >= -1)) {
 
-						tempX = (int) (Window.WIDTH / 2 * cord.getValue().x() + Window.WIDTH / 2);
-						tempY = (int) (Window.HEIGHT / 2 * cord.getValue().y() + Window.HEIGHT / 2);
-						tempZ = (int) (cord.getValue().z() + 1);
+					cord.getValue().setX(Window.WIDTH / 2 * cord.getValue().x() + Window.WIDTH / 2);
+					cord.getValue().setY(Window.HEIGHT / 2 * cord.getValue().y() + Window.HEIGHT / 2);
+					cord.getValue().setZ(cord.getValue().z() + 1);
 
-						//System.out.println(cord);
-						//System.out.println(cord.w());
-						g.setColor(this.getColor());
-
-						//tempY = Window.HEIGHT - tempY +5;
-
-						g.fillOval(tempX, tempY, (int) (10.), (int) (10.));
-					}
+					
+					g.fillOval((int)(cord.getValue().x()/1) - 5, (int) (cord.getValue().y()/1) - 5, (int) (10.), (int) (10.));
 				}
 			}
 		}

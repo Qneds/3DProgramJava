@@ -61,10 +61,10 @@ public class Panel extends JPanel implements Runnable, MouseMotionListener{
 		
 		if(Window.MULTI_THR == true) {
 			for(Mesh mesh : world.getMeshList()) {
-				synchronized (mesh.getDisplayCords()) {
-					mesh.draw(g2);
-				}
+				mesh.draw(g2);
 			}
+			
+			
 		} else {
 			world.draw(g2);
 		}
@@ -79,6 +79,7 @@ public class Panel extends JPanel implements Runnable, MouseMotionListener{
 	HashMap<Integer, D3CoordinateMatrix> bufor1 = new HashMap<Integer, D3CoordinateMatrix>();
 	HashMap<Integer, D3CoordinateMatrix> bufor2 = new HashMap<Integer, D3CoordinateMatrix>();
 	HashMap<Integer, D3CoordinateMatrix> actualBufor = bufor1;
+	HashMap<Integer, D3CoordinateMatrix> oldBufor = bufor2;
 	SquareMatrix lookAtCopy;
 	
 	@Override
@@ -89,25 +90,6 @@ public class Panel extends JPanel implements Runnable, MouseMotionListener{
 			HashMap<Integer, D3CoordinateMatrix> toCalculate;
 			storage = new ArrayList<D3CoordinateMatrix>();
 			lookAtCopy = world.camera.lookAt.clone();
-			
-			
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					while(true) {
-						repaint();
-						try {
-							Thread.sleep(33);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
-				}
-				
-			}).start();
-			
 			
 			
 			for (int k = 0; k < threadAmount; k++) {
@@ -137,6 +119,7 @@ public class Panel extends JPanel implements Runnable, MouseMotionListener{
 								li = i;
 								mesh = meshStr;
 								storage.clear();
+								storage.notifyAll();
 							}
 							try {
 								ret = (D3CoordinateMatrix) Matrix.multiplyMatrixs(lookAtCopy, cord);
@@ -146,10 +129,11 @@ public class Panel extends JPanel implements Runnable, MouseMotionListener{
 										ret);
 								ret.toNDC();
 
-								synchronized (actualBufor) {
-									actualBufor.put(li, ret);
-								}
-
+								
+								actualBufor.put(li, ret);
+								
+								
+								
 							} catch (MatrixException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -171,42 +155,48 @@ public class Panel extends JPanel implements Runnable, MouseMotionListener{
 
 					while (true) {
 
-						if (storage.isEmpty() && (i < toCalculate.size())) {
-
-							synchronized (storage) {
+						synchronized (storage) {
+							
+							while (i < toCalculate.size()) {
+								while (!storage.isEmpty()) {
+									try {
+										storage.wait();
+									} catch (InterruptedException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
 								i++;
 								storage.add(0, toCalculate.get(i));
-								//System.out.println(i);
 								storage.notifyAll();
 							}
-
+							
+							
 						}
+					
 
-						//System.out.println(toCalculate.size());
-						if (actualBufor.size() >= toCalculate.size()) {
-							synchronized (actualBufor) {
-								mesh.setDisplayCords(actualBufor);
-								if (actualBufor == bufor1) {
-									actualBufor = bufor2;
-								} else {
+						
+						//if (actualBufor.size() >= toCalculate.size()) {
+						synchronized (oldBufor) {
+							
+							
+							mesh.setDisplayCords(actualBufor);
+							oldBufor = actualBufor;
+							if (actualBufor == bufor1) {
+								actualBufor = bufor2;
+							} else {
 									actualBufor = bufor1;
-								}
-								actualBufor.clear();
-								i = 0;
-								break;
 							}
+							actualBufor.clear();
+							i = 0;
+							repaint();
+							break;
 						}
+						//}
 					}
 
 				}
 
-				//repaint();
-				//System.out.println(i);
-				//try {
-				//	Thread.sleep(33);
-				//} catch (InterruptedException e) {
-				//	e.printStackTrace();
-				//}
 			} 
 		} else {
 			while(true) {

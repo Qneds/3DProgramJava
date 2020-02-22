@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
 
@@ -55,6 +56,7 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 import math.D3CoordinateMatrix;
+import world.Edge;
 import world.Mesh;
 import world.World;
 
@@ -138,7 +140,6 @@ public class OptionsWindow extends JFrame implements ChangeListener, ActionListe
 		mesh = window.panel.world.getMeshList().get(0);
 		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		//setLocationRelativeTo(window);
 		addMouseListener(this);
 		setSize(450, 600);
 		
@@ -801,17 +802,18 @@ class ObjFileReader {
 				
 				
 				HashMap<Integer, D3CoordinateMatrix> cords = new HashMap<Integer, D3CoordinateMatrix>();
+				HashSet<Edge> edges = new HashSet<Edge>();
 				String line;
 				String[] values;
 				Double x;
 				Double y;
 				Double z;
 				int i = 1;
+				
+				
 				while((line = reader.readLine())!= null) {
 							
-					System.out.println(line);
-					//values = line.split("  ");
-							
+					System.out.println(line);		
 					if(line.startsWith("v ")) {
 							
 						line = line.substring(2);
@@ -836,11 +838,47 @@ class ObjFileReader {
 								
 								
 					}
+					
+					if(line.startsWith("f ")) {
+						
+						line = line.substring(2);
+						
+						while(true) {
+							
+							if(line.startsWith(" ")) {
+								line = line.substring(1);
+							} else
+								break;
+											
+						}
+						
+						values = line.split(" ");
+						
+						for(int l = 0 ; l < values.length ; l++) {
+							values[l] = values[l].split("/")[0];
+						}
+						
+						
+						for(int l = 0 ; l < values.length ; l++) {
+							
+							if(l == values.length - 1) {
+								
+								edges.add(new Edge(Integer.parseInt(values[l]),  Integer.parseInt(values[0])));
+								
+							} else {
+								edges.add(new Edge(Integer.parseInt(values[l]),  Integer.parseInt(values[l + 1])));
+							}
+							
+							
+						}
+						
+					}
 							
 							
 							
 				}
 				Mesh m = new Mesh(cords);
+				m.setEdges(edges);
 				return m;
 				
 				

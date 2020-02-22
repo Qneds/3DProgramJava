@@ -1,5 +1,6 @@
 package display;
 
+import java.awt.EventQueue;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import javax.swing.JFrame;
@@ -31,7 +32,16 @@ public class Window extends JFrame implements ComponentListener{
 		if(reply == JOptionPane.YES_OPTION) {
 			MULTI_THR = true;
 		}
-		new Window();
+		
+		
+		EventQueue.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				new Window();
+			}
+			
+		});
 		
 	}
 	

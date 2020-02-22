@@ -34,6 +34,22 @@ public class D3CoordinateMatrix extends Matrix {
 		return this.matrix[3][0];
 	}
 	
+	public void setX(Double x) {
+		this.matrix[0][0] = x;
+	}
+	
+	public void setY(Double y) {
+		this.matrix[1][0] = y;
+	}
+	
+	public void setZ(Double z) {
+		this.matrix[2][0] = z;
+	}
+	
+	public void setW(Double w) {
+		this.matrix[3][0] = w;
+	}
+	
 	
 	public static D3CoordinateMatrix crossProduct(D3CoordinateMatrix v1, D3CoordinateMatrix v2) {
 		
@@ -98,7 +114,21 @@ public class D3CoordinateMatrix extends Matrix {
 	public String toString() {
 		return "[ " + this.x() + " , " + this.y() + " , " + this.z() + " ]";
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		
+		if(obj instanceof D3CoordinateMatrix) {
+			
+			D3CoordinateMatrix c = (D3CoordinateMatrix)obj;
+			
+			return this.x() == c.x() && this.y() == c.y() && this.z() == c.z() && this.matrix[3][0] == c.matrix[3][0];
+			
+		}
+		return false;
+	}
+	
+	
 	
 	public void toNDC() {
 		matrix[0][0] /= matrix[3][0];

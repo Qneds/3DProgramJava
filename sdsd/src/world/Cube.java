@@ -1,6 +1,5 @@
 package world;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import math.D3CoordinateMatrix;
@@ -16,7 +15,7 @@ public class Cube extends Mesh{
 		
 		D3CoordinateMatrix temp[] = new D3CoordinateMatrix[2];
 		
-		
+	/*	
 		temp[0] = innerCords.get(0);
 		temp[1] = innerCords.get(1);
 		edges.add(temp);
@@ -32,7 +31,7 @@ public class Cube extends Mesh{
 		edges.add(temp);
 		temp[1] =  innerCords.get(4);
 		edges.add(temp);
-		
+		*/
 		
 	}
 		
