@@ -33,6 +33,10 @@ public class World implements KeyListener {
 		return meshList;
 	}
 	
+	public void addMeshToList0(Mesh mesh) {
+		meshList.set(0, mesh);
+	}
+	
 	public void addMeshToMeshList(Mesh mesh) {
 		meshList.add(mesh);
 	}
@@ -175,7 +179,10 @@ public class World implements KeyListener {
 						
 						
 						
-						g.fillOval((int)(cord.getValue().x()/1) - 5, (int)(cord.getValue().y()/1)- 5, (int)(10.), (int)(10.));
+						if (OptionsWindow.getVertexDraw()) {
+							g.fillOval((int) (cord.getValue().x() / 1) - 5, (int) (cord.getValue().y() / 1) - 5,
+									(int) (10.), (int) (10.));
+						}
 					}
 					
 				} catch (MatrixException e) {
@@ -185,11 +192,12 @@ public class World implements KeyListener {
 				
 			}
 			
-			for(Edge edge : mesh.edges) {
-				
-				edge.drawEdge(g, outerCords);
-				
-				
+			if (OptionsWindow.getLineDraw()) {
+				for (Edge edge : mesh.edges) {
+
+					edge.drawEdge(g, outerCords);
+
+				} 
 			}
 			
 			

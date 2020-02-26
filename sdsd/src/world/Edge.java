@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.HashMap;
 
+import display.Window;
 import math.D3CoordinateMatrix;
 
 public class Edge {
@@ -51,14 +52,24 @@ public class Edge {
 	
 	public void drawEdge(Graphics2D g, Mesh mesh) {
 		
-		g.drawLine((int)(mesh.displayCords.get(p1).x()/1), (int)(mesh.displayCords.get(p1).y()/1), (int)(mesh.displayCords.get(p2).x()/1), (int)(mesh.displayCords.get(p2).y()/1));
+		if (((int) (mesh.displayCords.get(p1).x() / 1) >=0 && (int) (mesh.displayCords.get(p1).x() / 1) <= Window.WIDTH) && ((int) (mesh.displayCords.get(p2).x() / 1) >=0 && (int) (mesh.displayCords.get(p2).x() / 1) <= Window.WIDTH)
+		&&  ((int) (mesh.displayCords.get(p1).y() / 1) >=0 && (int) (mesh.displayCords.get(p1).y() / 1) <= Window.HEIGHT) && ((int) (mesh.displayCords.get(p2).y() / 1) >=0 && (int) (mesh.displayCords.get(p2).y() / 1) <= Window.HEIGHT)
+		&&  ((int) (mesh.displayCords.get(p1).z() / 1) >=0 && (int) (mesh.displayCords.get(p1).z() / 1) <= 2) && ((int) (mesh.displayCords.get(p2).z() / 1) >=0 && (int) (mesh.displayCords.get(p2).z() / 1) <= 2)) {
+			g.drawLine((int) (mesh.displayCords.get(p1).x() / 1), (int) (mesh.displayCords.get(p1).y() / 1),
+					(int) (mesh.displayCords.get(p2).x() / 1), (int) (mesh.displayCords.get(p2).y() / 1));
+		}
 		
 		
 	}
 	
 	public void drawEdge(Graphics2D g, HashMap<Integer, D3CoordinateMatrix> cords) {
 		
-		g.drawLine((int)(cords.get(p1).x()/1), (int)(cords.get(p1).y()/1), (int)(cords.get(p2).x()/1), (int)(cords.get(p2).y()/1));
+		if (((int) (cords.get(p1).x() / 1) >= 0 && (int) (cords.get(p1).x() / 1) <= Window.WIDTH) && ((int) (cords.get(p2).x() / 1) >= 0 && (int) (cords.get(p2).x() / 1) <= Window.WIDTH)
+		 && ((int) (cords.get(p1).y() / 1) >= 0 && (int) (cords.get(p1).y() / 1) <= Window.HEIGHT) && ((int) (cords.get(p2).y() / 1) >= 0 && (int) (cords.get(p2).y() / 1) <= Window.HEIGHT)
+		 && ((int) (cords.get(p1).z() / 1) >= 0 && (int) (cords.get(p1).z() / 1) <= 2) && ((int) (cords.get(p2).z() / 1) >= 0 && (int) (cords.get(p2).z() / 1) <= 2)) {
+			g.drawLine((int) (cords.get(p1).x() / 1), (int) (cords.get(p1).y() / 1), (int) (cords.get(p2).x() / 1),
+					(int) (cords.get(p2).y() / 1));
+		} 
 		
 	}
 

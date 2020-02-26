@@ -610,9 +610,14 @@ public class OptionsWindow extends JFrame implements ChangeListener, ActionListe
 		}
 		
 		if(source == loadFile) {
-			mesh = reader.createMeshAsync(reader.loadFile());
-			if(mesh != null)
-				window.panel.world.getMeshList().set(0, mesh);
+			try {
+				mesh = reader.createMeshAsync(reader.loadFile());
+			} catch (ExecutionException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			//if(mesh != null)
+			//	window.panel.world.getMeshList().set(0, mesh);
 			
 		}
 		
@@ -749,9 +754,9 @@ public class OptionsWindow extends JFrame implements ChangeListener, ActionListe
 class ObjFileReader {
 	
 	JFileChooser chooser;
-	Component parent;
+	Window parent;
 	
-	public ObjFileReader(Component parent) {
+	public ObjFileReader(Window parent) {
 		this.parent = parent;
 		chooser = new JFileChooser(".");
 		chooser.setFileFilter(new FileFilter() {
@@ -891,7 +896,7 @@ class ObjFileReader {
 	}
 	
 	
-	public Mesh createMeshAsync(File file) {
+	public Mesh createMeshAsync(File file) throws ExecutionException {
 		
 		Mesh me;
 		
@@ -901,13 +906,19 @@ class ObjFileReader {
 			
 			@Override
 			protected Mesh doInBackground() throws Exception {
-				return createMesh(file);
+				mesh = createMesh(file);
+				return mesh;
 			}
 			
 			@Override
 			public void done() {
 				
-				
+				try {
+					parent.panel.world.addMeshToList0(get());
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			}
 		}
@@ -915,12 +926,8 @@ class ObjFileReader {
 		Task task = new Task();
 		task.execute();
 		
-		try {
-			return task.get();
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//return task.get();
+		
 		
 		return null;
 		
